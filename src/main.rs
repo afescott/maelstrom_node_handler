@@ -1,6 +1,10 @@
 use std::io::{self, stdout, Write};
 
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
+use state::State;
+
+mod state;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Message {
@@ -11,10 +15,37 @@ struct Message {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Body {
-    #[serde(rename = "type")]
-    type_of_msg: String,
-    msg_id: usize,
-    echo: Option<String>,
+    payload: Payload,
+    #[serde(rename = "msg_id")]
+    id: Option<usize>,
+    in_reply_to: Option<usize>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+pub enum Payload {
+    InitOk {},
+    Echo { echo: String },
+    EchOk { echo: String },
+}
+
+fn main() -> anyhow::Result<()> {
+    let stdin = io::stdin().lock();
+    let mut inputs = serde_json::Deserializer::from_reader(stdin).into_iter::<Message>();
+
+    let stdout = io::stdout().lock();
+    let mut output = serde_json::Serializer::new(stdout);
+
+    let mut state = State { id: 0 };
+
+    for input in inputs {
+        let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
+
+        state.step(input, &mut output);
+    }
+
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,37 +65,4 @@ struct BodyResponse {
     msg_id: Option<usize>,
     // msg id you are respending
     in_reply_to: Option<usize>,
-    /*     echo: Option<String>, */
-}
-
-fn main() {
-    let mut output = io::stdout().lock();
-    let input = io::stdin().lock();
-
-    let mut message = serde_json::Deserializer::from_reader(input).into_iter::<Message>();
-
-    while let Some(message_serialised) = message.next() {
-        tracing::debug!("hit i think");
-        let next_msg = message_serialised;
-
-        match next_msg {
-            Ok(val) => {
-                let msg_response = MessageResponse {
-                    src: val.src,
-                    dest: val.dest,
-                    body: BodyResponse {
-                        type_of_msg: val.body.type_of_msg,
-                        msg_id: Some(val.body.msg_id),
-                        in_reply_to: Some(val.body.msg_id),
-                        /*                         echo: val.body.echo, */
-                    },
-                };
-                serde_json::to_writer(&mut output, &msg_response);
-                output.write_all(b"\n");
-            }
-            Err(err) => {
-                output.write_all(format!("{}", err.to_string()).as_bytes());
-            }
-        }
-    }
 }
