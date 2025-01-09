@@ -1,0 +1,4 @@
+Error: Maelstrom input from STDIN could not be deserialized
+
+Caused by:
+    invalid type: string "n4", expected usize at line 1 column 117

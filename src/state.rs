@@ -1,5 +1,6 @@
-use std::io::StdoutLock;
+use std::io::{StdoutLock, Write};
 
+use anyhow::{bail, Context};
 use serde::Serialize;
 
 use crate::{Body, Message};
@@ -9,8 +10,8 @@ pub struct State {
 }
 
 impl State {
-    pub fn step(&mut self, input: Message, output: &mut serde_json::Serializer<StdoutLock>) {
-        /* match input.body.payload {
+    pub fn step(&mut self, input: Message, output: &mut StdoutLock) -> anyhow::Result<()> {
+        match input.body.payload {
             crate::Payload::Echo { echo } => {
                 let reply = Message {
                     src: input.dest,
@@ -18,15 +19,37 @@ impl State {
                     body: Body {
                         id: Some(self.id),
                         in_reply_to: input.body.id,
-                        payload: crate::Payload::EchOk { echo },
+                        payload: crate::Payload::EchoOk { echo },
                     },
                 };
 
-                reply.serialize(output);
+                serde_json::to_writer(&mut *output, &reply).context("Echo serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
 
                 self.id += 1;
             }
-            _ => todo!(),
-        } */
+            crate::Payload::Init { .. } => {
+                let reply = Message {
+                    src: input.dest,
+                    dest: input.src,
+                    body: Body {
+                        id: Some(self.id),
+                        in_reply_to: input.body.id,
+                        payload: crate::Payload::InitOk,
+                    },
+                };
+                serde_json::to_writer(&mut *output, &reply).context("Init serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
+
+                self.id += 1;
+            }
+            crate::Payload::InitOk { .. } => bail!("Error"),
+            crate::Payload::EchoOk { .. } => {}
+        }
+        Ok(())
     }
 }
