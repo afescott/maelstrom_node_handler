@@ -47,8 +47,30 @@ impl State {
 
                 self.id += 1;
             }
+            //This should not happen
             crate::Payload::InitOk { .. } => bail!("Error"),
             crate::Payload::EchoOk { .. } => {}
+            crate::Payload::Generate => {
+                let reply = Message {
+                    src: input.dest,
+                    dest: input.src,
+                    body: Body {
+                        id: Some(self.id),
+                        in_reply_to: input.body.id,
+                        payload: crate::Payload::GenerateOk {
+                            guid: ulid::Ulid::new().to_string(),
+                        },
+                    },
+                };
+
+                serde_json::to_writer(&mut *output, &reply).context("Generate serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
+
+                self.id += 1;
+            }
+            crate::Payload::GenerateOk { .. } => bail!("Should not generate ok?"),
         }
         Ok(())
     }

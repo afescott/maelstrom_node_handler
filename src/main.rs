@@ -1,4 +1,4 @@
-use std::io::{self, stdout, Write};
+use std::io::{self};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -37,6 +37,12 @@ pub enum Payload {
     EchoOk {
         echo: String,
     },
+    Generate,
+    GenerateOk {
+        //other id names
+        #[serde(rename = "id")]
+        guid: String,
+    },
 }
 
 fn main() -> anyhow::Result<()> {
@@ -56,23 +62,4 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename = "Body")]
-struct MessageResponse {
-    src: String,
-    dest: String,
-    body: BodyResponse,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename = "Body")]
-struct BodyResponse {
-    #[serde(rename = "type")]
-    type_of_msg: String,
-    // unique id identifier
-    msg_id: Option<usize>,
-    // msg id you are respending
-    in_reply_to: Option<usize>,
 }
