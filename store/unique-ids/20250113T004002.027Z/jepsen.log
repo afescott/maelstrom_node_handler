@@ -1,0 +1,244 @@
+2025-01-13 00:40:02,059{GMT}	INFO	[jepsen test runner] jepsen.core: Test version b8276a9d9b06834cd87117481375b49ff13000d7 (plus uncommitted changes)
+2025-01-13 00:40:02,059{GMT}	INFO	[jepsen test runner] jepsen.core: Command line:
+lein run test -w unique-ids --bin ./target/debug/maelstrom_distributed --time-limit 30 --rate 1000 --node-count 3 --availability total --nemesis partition
+2025-01-13 00:40:02,141{GMT}	INFO	[jepsen test runner] jepsen.core: Running test:
+{:args []
+ :remote
+ #jepsen.control.retry.Remote{:remote #jepsen.control.scp.Remote{:cmd-remote #jepsen.control.sshj.SSHJRemote{:concurrency-limit 6,
+                                                                                                             :conn-spec nil,
+                                                                                                             :client nil,
+                                                                                                             :semaphore nil},
+                                                                 :conn-spec nil},
+                              :conn nil}
+ :log-net-send false
+ :node-count 3
+ :availability :total
+ :max-txn-length 4
+ :concurrency 3
+ :db
+ #object[maelstrom.db$db$reify__16142
+         "0x453ca7f"
+         "maelstrom.db$db$reify__16142@453ca7f"]
+ :max-writes-per-key 16
+ :leave-db-running? false
+ :name "unique-ids"
+ :logging-json? false
+ :start-time
+ #object[org.joda.time.DateTime "0x292237cd" "2025-01-13T00:40:02.027Z"]
+ :nemesis-interval 10
+ :net
+ #object[maelstrom.net$jepsen_net$reify__15251
+         "0x797a5b31"
+         "maelstrom.net$jepsen_net$reify__15251@797a5b31"]
+ :client
+ #object[maelstrom.workload.unique_ids$client$reify__20074
+         "0x13d7d1a8"
+         "maelstrom.workload.unique_ids$client$reify__20074@13d7d1a8"]
+ :barrier
+ #object[java.util.concurrent.CyclicBarrier
+         "0x60035f1e"
+         "java.util.concurrent.CyclicBarrier@60035f1e"]
+ :log-stderr false
+ :pure-generators true
+ :ssh {:dummy? true}
+ :rate 1000.0
+ :checker
+ #object[jepsen.checker$compose$reify__11881
+         "0x5827908c"
+         "jepsen.checker$compose$reify__11881@5827908c"]
+ :argv
+ ("test"
+  "-w"
+  "unique-ids"
+  "--bin"
+  "./target/debug/maelstrom_distributed"
+  "--time-limit"
+  "30"
+  "--rate"
+  "1000"
+  "--node-count"
+  "3"
+  "--availability"
+  "total"
+  "--nemesis"
+  "partition")
+ :nemesis
+ (jepsen.nemesis.ReflCompose
+  {:fm {:start-partition 0,
+        :stop-partition 0,
+        :kill 1,
+        :start 1,
+        :pause 1,
+        :resume 1},
+   :nemeses [#unprintable "jepsen.nemesis.combined$partition_nemesis$reify__16416@732ffb6a"
+             #unprintable "jepsen.nemesis.combined$db_nemesis$reify__16397@5ed83e36"]})
+ :nodes ["n0" "n1" "n2"]
+ :test-count 1
+ :latency {:mean 0, :dist :constant}
+ :bin "./target/debug/maelstrom_distributed"
+ :generator
+ (jepsen.generator.TimeLimit
+  {:limit 30000000000,
+   :cutoff nil,
+   :gen (jepsen.generator.Any
+         {:gens [(jepsen.generator.OnThreads
+                  {:f #{:nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0x16441c13"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@16441c13"],
+                   :gen (jepsen.generator.Stagger
+                         {:dt 20000000000,
+                          :next-time nil,
+                          :gen (jepsen.generator.FlipFlop
+                                {:gens [#object[jepsen.nemesis.combined$partition_package$start__16420
+                                                "0x6d3b59e2"
+                                                "jepsen.nemesis.combined$partition_package$start__16420@6d3b59e2"]
+                                        ({:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         {:type :info,
+                                          :f :stop-partition,
+                                          :value nil}
+                                         ...)],
+                                 :i 0})})})
+                 (jepsen.generator.OnThreads
+                  {:f #jepsen.generator.context.AllBut{:element :nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0x76480730"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@76480730"],
+                   :gen (jepsen.generator.Stagger
+                         {:dt 2000000,
+                          :next-time nil,
+                          :gen (jepsen.generator.Repeat
+                                {:remaining -1, :gen {:f :generate}})})})]})})
+ :log-net-recv false
+ :os
+ #object[maelstrom.net$jepsen_os$reify__15254
+         "0x405a296e"
+         "maelstrom.net$jepsen_os$reify__15254@405a296e"]
+ :time-limit 30
+ :workload :unique-ids
+ :consistency-models [:strict-serializable]
+ :topology :grid}
+
+2025-01-13 00:40:04,091{GMT}	INFO	[jepsen node n0] maelstrom.net: Starting Maelstrom network
+2025-01-13 00:40:04,092{GMT}	INFO	[jepsen test runner] jepsen.db: Tearing down DB
+2025-01-13 00:40:04,094{GMT}	INFO	[jepsen test runner] jepsen.db: Setting up DB
+2025-01-13 00:40:04,095{GMT}	INFO	[jepsen node n1] maelstrom.db: Setting up n1
+2025-01-13 00:40:04,095{GMT}	INFO	[jepsen node n2] maelstrom.db: Setting up n2
+2025-01-13 00:40:04,096{GMT}	INFO	[jepsen node n1] maelstrom.process: launching ./target/debug/maelstrom_distributed []
+2025-01-13 00:40:04,096{GMT}	INFO	[jepsen node n2] maelstrom.process: launching ./target/debug/maelstrom_distributed []
+2025-01-13 00:40:04,101{GMT}	INFO	[jepsen node n0] maelstrom.service: Starting services: (lin-kv lin-tso lww-kv seq-kv)
+2025-01-13 00:40:04,103{GMT}	INFO	[jepsen node n0] maelstrom.db: Setting up n0
+2025-01-13 00:40:04,104{GMT}	INFO	[jepsen node n0] maelstrom.process: launching ./target/debug/maelstrom_distributed []
+2025-01-13 00:40:04,129{GMT}	INFO	[jepsen test runner] jepsen.core: Relative time begins now
+2025-01-13 00:40:04,149{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:generate	nil
+2025-01-13 00:40:04,150{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:start-partition	:minority-third
+2025-01-13 00:40:04,152{GMT}	INFO	[jepsen worker 2] jepsen.util: 2	:invoke	:generate	nil
+2025-01-13 00:40:04,155{GMT}	INFO	[jepsen worker 1] jepsen.util: 1	:invoke	:generate	nil
+2025-01-13 00:40:04,155{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:start-partition	[:isolated {"n2" #{}, "n1" #{}, "n0" #{}}]
+2025-01-13 00:40:09,156{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:09,161{GMT}	INFO	[jepsen worker 0] jepsen.util: 3	:invoke	:generate	nil
+2025-01-13 00:40:09,156{GMT}	INFO	[jepsen worker 1] jepsen.util: 1	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:09,156{GMT}	INFO	[jepsen worker 2] jepsen.util: 2	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:09,162{GMT}	INFO	[jepsen worker 1] jepsen.util: 4	:invoke	:generate	nil
+2025-01-13 00:40:09,166{GMT}	INFO	[jepsen worker 2] jepsen.util: 5	:invoke	:generate	nil
+2025-01-13 00:40:14,162{GMT}	INFO	[jepsen worker 0] jepsen.util: 3	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:14,166{GMT}	INFO	[jepsen worker 1] jepsen.util: 4	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:14,166{GMT}	INFO	[jepsen worker 2] jepsen.util: 5	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:14,165{GMT}	INFO	[jepsen worker 0] jepsen.util: 6	:invoke	:generate	nil
+2025-01-13 00:40:14,169{GMT}	INFO	[jepsen worker 1] jepsen.util: 7	:invoke	:generate	nil
+2025-01-13 00:40:14,170{GMT}	INFO	[jepsen worker 2] jepsen.util: 8	:invoke	:generate	nil
+2025-01-13 00:40:19,169{GMT}	INFO	[jepsen worker 1] jepsen.util: 7	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:19,172{GMT}	INFO	[jepsen worker 2] jepsen.util: 8	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:19,178{GMT}	INFO	[jepsen worker 1] jepsen.util: 10	:invoke	:generate	nil
+2025-01-13 00:40:19,173{GMT}	INFO	[jepsen worker 0] jepsen.util: 6	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:19,178{GMT}	INFO	[jepsen worker 0] jepsen.util: 9	:invoke	:generate	nil
+2025-01-13 00:40:19,181{GMT}	INFO	[jepsen worker 2] jepsen.util: 11	:invoke	:generate	nil
+2025-01-13 00:40:20,894{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:stop-partition	nil
+2025-01-13 00:40:20,894{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:stop-partition	:network-healed
+2025-01-13 00:40:24,179{GMT}	INFO	[jepsen worker 1] jepsen.util: 10	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:24,183{GMT}	INFO	[jepsen worker 2] jepsen.util: 11	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:24,179{GMT}	INFO	[jepsen worker 0] jepsen.util: 9	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:24,186{GMT}	INFO	[jepsen worker 1] jepsen.util: 13	:invoke	:generate	nil
+2025-01-13 00:40:24,187{GMT}	INFO	[jepsen worker 0] jepsen.util: 12	:invoke	:generate	nil
+2025-01-13 00:40:24,189{GMT}	INFO	[jepsen worker 2] jepsen.util: 14	:invoke	:generate	nil
+2025-01-13 00:40:26,350{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:start-partition	:minority-third
+2025-01-13 00:40:26,351{GMT}	INFO	[jepsen worker nemesis] jepsen.util: :nemesis	:info	:start-partition	[:isolated {"n2" #{}, "n1" #{}, "n0" #{}}]
+2025-01-13 00:40:29,189{GMT}	INFO	[jepsen worker 0] jepsen.util: 12	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:29,190{GMT}	INFO	[jepsen worker 2] jepsen.util: 14	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:29,191{GMT}	INFO	[jepsen worker 1] jepsen.util: 13	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:29,193{GMT}	INFO	[jepsen worker 2] jepsen.util: 17	:invoke	:generate	nil
+2025-01-13 00:40:29,191{GMT}	INFO	[jepsen worker 0] jepsen.util: 15	:invoke	:generate	nil
+2025-01-13 00:40:29,194{GMT}	INFO	[jepsen worker 1] jepsen.util: 16	:invoke	:generate	nil
+2025-01-13 00:40:34,195{GMT}	INFO	[jepsen worker 2] jepsen.util: 17	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:34,203{GMT}	INFO	[jepsen worker 1] jepsen.util: 16	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:34,204{GMT}	INFO	[jepsen worker 0] jepsen.util: 15	:info	:generate	nil	:net-timeout
+2025-01-13 00:40:34,248{GMT}	INFO	[jepsen test runner] jepsen.core: Run complete, writing
+2025-01-13 00:40:34,419{GMT}	INFO	[jepsen node n0] maelstrom.db: Tearing down n0
+2025-01-13 00:40:34,422{GMT}	INFO	[jepsen node n1] maelstrom.db: Tearing down n1
+2025-01-13 00:40:34,423{GMT}	INFO	[jepsen node n2] maelstrom.db: Tearing down n2
+2025-01-13 00:40:35,198{GMT}	INFO	[jepsen node n0] maelstrom.net: Shutting down Maelstrom network
+2025-01-13 00:40:35,200{GMT}	WARN	[jepsen test runner] jepsen.core: Test crashed!
+clojure.lang.ExceptionInfo: Node n2 crashed with exit status 1. Before crashing, it wrote to STDOUT:
+
+{"src":"n2","dest":"c0","body":{"msg_id":0,"in_reply_to":1,"type":"init_ok"}}
+{"src":"c7","dest":"n2","body":{"msg_id":1,"in_reply_to":null,"type":"generate_ok","id":"01JHEHMYSSBVSES2PXZ1YX100K"}}
+
+And to STDERR:
+
+Error: Step failed for input: Message { src: "c7", dest: "n2", body: Body { id: Some(1), in_reply_to: None, payload: GenerateOk { guid: "01JHEHMYSSBVSES2PXZ1YX100K" } } }
+
+Caused by:
+    Should not generate ok?
+
+Full STDERR logs are available in /home/ashley/Documents/RustHome/distributed/maelstrom_distributed/store/unique-ids/20250113T004002.027Z/node-logs/n2.log
+	at slingshot.support$stack_trace.invoke(support.clj:201)
+	at maelstrom.process$stop_node_BANG_.invokeStatic(process.clj:239)
+	at maelstrom.process$stop_node_BANG_.invoke(process.clj:217)
+	at maelstrom.db$db$reify__16142.teardown_BANG_(db.clj:75)
+	at jepsen.db$fn__8744$G__8725__8748.invoke(db.clj:12)
+	at jepsen.db$fn__8744$G__8724__8753.invoke(db.clj:12)
+	at clojure.core$partial$fn__5908.invoke(core.clj:2642)
+	at jepsen.control$on_nodes$fn__8599.invoke(control.clj:314)
+	at clojure.lang.AFn.applyToHelper(AFn.java:154)
+	at clojure.lang.AFn.applyTo(AFn.java:144)
+	at clojure.core$apply.invokeStatic(core.clj:667)
+	at clojure.core$with_bindings_STAR_.invokeStatic(core.clj:1990)
+	at clojure.core$with_bindings_STAR_.doInvoke(core.clj:1990)
+	at clojure.lang.RestFn.applyTo(RestFn.java:142)
+	at clojure.core$apply.invokeStatic(core.clj:671)
+	at clojure.core$bound_fn_STAR_$fn__5818.doInvoke(core.clj:2020)
+	at clojure.lang.RestFn.invoke(RestFn.java:408)
+	at dom_top.core$real_pmap_helper$build_thread__211$fn__212.invoke(core.clj:163)
+	at clojure.lang.AFn.applyToHelper(AFn.java:152)
+	at clojure.lang.AFn.applyTo(AFn.java:144)
+	at clojure.core$apply.invokeStatic(core.clj:667)
+	at clojure.core$with_bindings_STAR_.invokeStatic(core.clj:1990)
+	at clojure.core$with_bindings_STAR_.doInvoke(core.clj:1990)
+	at clojure.lang.RestFn.invoke(RestFn.java:425)
+	at clojure.lang.AFn.applyToHelper(AFn.java:156)
+	at clojure.lang.RestFn.applyTo(RestFn.java:132)
+	at clojure.core$apply.invokeStatic(core.clj:671)
+	at clojure.core$bound_fn_STAR_$fn__5818.doInvoke(core.clj:2020)
+	at clojure.lang.RestFn.invoke(RestFn.java:397)
+	at clojure.lang.AFn.run(AFn.java:22)
+	at java.base/java.lang.Thread.run(Thread.java:840)

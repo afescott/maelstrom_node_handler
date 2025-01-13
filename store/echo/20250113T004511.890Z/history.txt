@@ -1,0 +1,120 @@
+4	:invoke	:echo	"Please echo 20"
+2	:invoke	:echo	"Please echo 81"
+3	:invoke	:echo	"Please echo 77"
+1	:invoke	:echo	"Please echo 83"
+0	:invoke	:echo	"Please echo 59"
+4	:info	:echo	"Please echo 20"	:net-timeout
+9	:invoke	:echo	"Please echo 35"
+2	:info	:echo	"Please echo 81"	:net-timeout
+7	:invoke	:echo	"Please echo 67"
+3	:info	:echo	"Please echo 77"	:net-timeout
+1	:info	:echo	"Please echo 83"	:net-timeout
+0	:info	:echo	"Please echo 59"	:net-timeout
+6	:invoke	:echo	"Please echo 110"
+5	:invoke	:echo	"Please echo 68"
+8	:invoke	:echo	"Please echo 115"
+9	:info	:echo	"Please echo 35"	:net-timeout
+14	:invoke	:echo	"Please echo 88"
+7	:info	:echo	"Please echo 67"	:net-timeout
+12	:invoke	:echo	"Please echo 105"
+6	:info	:echo	"Please echo 110"	:net-timeout
+5	:info	:echo	"Please echo 68"	:net-timeout
+10	:invoke	:echo	"Please echo 24"
+8	:info	:echo	"Please echo 115"	:net-timeout
+13	:invoke	:echo	"Please echo 69"
+11	:invoke	:echo	"Please echo 103"
+14	:info	:echo	"Please echo 88"	:net-timeout
+19	:invoke	:echo	"Please echo 108"
+12	:info	:echo	"Please echo 105"	:net-timeout
+17	:invoke	:echo	"Please echo 16"
+10	:info	:echo	"Please echo 24"	:net-timeout
+15	:invoke	:echo	"Please echo 116"
+13	:info	:echo	"Please echo 69"	:net-timeout
+18	:invoke	:echo	"Please echo 71"
+11	:info	:echo	"Please echo 103"	:net-timeout
+16	:invoke	:echo	"Please echo 104"
+19	:info	:echo	"Please echo 108"	:net-timeout
+24	:invoke	:echo	"Please echo 50"
+17	:info	:echo	"Please echo 16"	:net-timeout
+22	:invoke	:echo	"Please echo 112"
+15	:info	:echo	"Please echo 116"	:net-timeout
+20	:invoke	:echo	"Please echo 14"
+18	:info	:echo	"Please echo 71"	:net-timeout
+23	:invoke	:echo	"Please echo 89"
+16	:info	:echo	"Please echo 104"	:net-timeout
+21	:invoke	:echo	"Please echo 68"
+24	:info	:echo	"Please echo 50"	:net-timeout
+29	:invoke	:echo	"Please echo 104"
+22	:info	:echo	"Please echo 112"	:net-timeout
+27	:invoke	:echo	"Please echo 43"
+20	:info	:echo	"Please echo 14"	:net-timeout
+25	:invoke	:echo	"Please echo 103"
+23	:info	:echo	"Please echo 89"	:net-timeout
+28	:invoke	:echo	"Please echo 20"
+21	:info	:echo	"Please echo 68"	:net-timeout
+26	:invoke	:echo	"Please echo 72"
+29	:info	:echo	"Please echo 104"	:net-timeout
+34	:invoke	:echo	"Please echo 100"
+27	:info	:echo	"Please echo 43"	:net-timeout
+32	:invoke	:echo	"Please echo 43"
+25	:info	:echo	"Please echo 103"	:net-timeout
+30	:invoke	:echo	"Please echo 88"
+28	:info	:echo	"Please echo 20"	:net-timeout
+33	:invoke	:echo	"Please echo 30"
+26	:info	:echo	"Please echo 72"	:net-timeout
+31	:invoke	:echo	"Please echo 110"
+34	:info	:echo	"Please echo 100"	:net-timeout
+39	:invoke	:echo	"Please echo 50"
+32	:info	:echo	"Please echo 43"	:net-timeout
+37	:invoke	:echo	"Please echo 23"
+30	:info	:echo	"Please echo 88"	:net-timeout
+35	:invoke	:echo	"Please echo 124"
+33	:info	:echo	"Please echo 30"	:net-timeout
+38	:invoke	:echo	"Please echo 4"
+31	:info	:echo	"Please echo 110"	:net-timeout
+36	:invoke	:echo	"Please echo 0"
+39	:info	:echo	"Please echo 50"	:net-timeout
+44	:invoke	:echo	"Please echo 107"
+37	:info	:echo	"Please echo 23"	:net-timeout
+42	:invoke	:echo	"Please echo 39"
+35	:info	:echo	"Please echo 124"	:net-timeout
+40	:invoke	:echo	"Please echo 94"
+38	:info	:echo	"Please echo 4"	:net-timeout
+43	:invoke	:echo	"Please echo 121"
+36	:info	:echo	"Please echo 0"	:net-timeout
+41	:invoke	:echo	"Please echo 122"
+44	:info	:echo	"Please echo 107"	:net-timeout
+49	:invoke	:echo	"Please echo 55"
+42	:info	:echo	"Please echo 39"	:net-timeout
+47	:invoke	:echo	"Please echo 121"
+40	:info	:echo	"Please echo 94"	:net-timeout
+45	:invoke	:echo	"Please echo 101"
+43	:info	:echo	"Please echo 121"	:net-timeout
+48	:invoke	:echo	"Please echo 47"
+41	:info	:echo	"Please echo 122"	:net-timeout
+46	:invoke	:echo	"Please echo 39"
+49	:info	:echo	"Please echo 55"	:net-timeout
+54	:invoke	:echo	"Please echo 21"
+47	:info	:echo	"Please echo 121"	:net-timeout
+52	:invoke	:echo	"Please echo 76"
+45	:info	:echo	"Please echo 101"	:net-timeout
+50	:invoke	:echo	"Please echo 38"
+48	:info	:echo	"Please echo 47"	:net-timeout
+53	:invoke	:echo	"Please echo 44"
+46	:info	:echo	"Please echo 39"	:net-timeout
+51	:invoke	:echo	"Please echo 108"
+54	:info	:echo	"Please echo 21"	:net-timeout
+59	:invoke	:echo	"Please echo 9"
+52	:info	:echo	"Please echo 76"	:net-timeout
+57	:invoke	:echo	"Please echo 61"
+50	:info	:echo	"Please echo 38"	:net-timeout
+55	:invoke	:echo	"Please echo 59"
+53	:info	:echo	"Please echo 44"	:net-timeout
+58	:invoke	:echo	"Please echo 91"
+51	:info	:echo	"Please echo 108"	:net-timeout
+56	:invoke	:echo	"Please echo 39"
+59	:info	:echo	"Please echo 9"	:net-timeout
+57	:info	:echo	"Please echo 61"	:net-timeout
+55	:info	:echo	"Please echo 59"	:net-timeout
+58	:info	:echo	"Please echo 91"	:net-timeout
+56	:info	:echo	"Please echo 39"	:net-timeout

@@ -1,8 +1,11 @@
-use std::io::{self};
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
-use state::State;
+use state::Node;
 
 mod state;
 
@@ -11,6 +14,25 @@ struct Message {
     src: String,
     dest: String,
     body: Body,
+}
+
+impl Message {
+    fn into_reply(self, id: Option<&mut usize>) -> Self {
+        Self {
+            src: self.dest,
+            dest: self.src,
+            body: Body {
+                id: id.map(|id| {
+                    let mid = *id;
+                    *id += 1;
+                    mid
+                }),
+                /*                 Some(self.id), */
+                in_reply_to: self.body.id,
+                payload: self.body.payload,
+            },
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -26,6 +48,10 @@ struct Body {
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum Payload {
+    Broadcast {
+        message: usize,
+    },
+    BroadcastOk,
     Init {
         node_id: String,
         node_ids: Vec<String>,
@@ -43,6 +69,14 @@ pub enum Payload {
         #[serde(rename = "id")]
         guid: String,
     },
+    Read,
+    ReadOk {
+        messages: Vec<usize>,
+    },
+    Topology {
+        topology: HashMap<String, Vec<String>>,
+    },
+    TopologyOk,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -51,13 +85,41 @@ fn main() -> anyhow::Result<()> {
 
     let mut stdout = io::stdout().lock();
 
-    let mut state = State { id: 0 };
+    /*     let mut state = Node { node_id:  }; */
+
+    let init_msg = inputs
+        .next()
+        .expect("Value")
+        .context("No init received")
+        .context("Init msg couldn't be deserialized")?;
+
+    let Payload::Init { node_id, node_ids } = init_msg.body.payload else {
+        panic!("first message should be init");
+    };
+
+    let init_resp = Message {
+        src: init_msg.dest,
+        dest: init_msg.src,
+        body: Body {
+            id: Some(0),
+            in_reply_to: init_msg.body.id,
+            payload: crate::Payload::InitOk,
+        },
+    };
+
+    serde_json::to_writer(&mut stdout, &init_resp).context("Echo serialisation")?;
+    stdout
+        .write_all(b"\n")
+        .context("write newline else buffer doesn't work")?;
+
+    let mut init = Node::from_init(node_id, node_ids);
 
     for input in inputs {
         let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
 
-        state
-            .step(input.clone(), &mut stdout)
+        /*         if let Payload::Init { node_id, .. } = input.body.payload {} */
+
+        init.step(input.clone(), &mut stdout)
             .context(format!("Step failed for input: {:?}", input))?;
     }
 

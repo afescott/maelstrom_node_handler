@@ -1,0 +1,287 @@
+2025-01-13 00:40:53,213{GMT}	INFO	[jepsen test runner] jepsen.core: Test version b8276a9d9b06834cd87117481375b49ff13000d7 (plus uncommitted changes)
+2025-01-13 00:40:53,214{GMT}	INFO	[jepsen test runner] jepsen.core: Command line:
+lein run test -w echo --bin ./target/debug/maelstrom_distributed -- node-count 1 --time-limit 10
+2025-01-13 00:40:53,278{GMT}	INFO	[jepsen test runner] jepsen.core: Running test:
+{:args ["node-count" "1" "--time-limit" "10"]
+ :remote
+ #jepsen.control.retry.Remote{:remote #jepsen.control.scp.Remote{:cmd-remote #jepsen.control.sshj.SSHJRemote{:concurrency-limit 6,
+                                                                                                             :conn-spec nil,
+                                                                                                             :client nil,
+                                                                                                             :semaphore nil},
+                                                                 :conn-spec nil},
+                              :conn nil}
+ :log-net-send false
+ :node-count nil
+ :availability nil
+ :max-txn-length 4
+ :concurrency 5
+ :db
+ #object[maelstrom.db$db$reify__16142
+         "0x5827908c"
+         "maelstrom.db$db$reify__16142@5827908c"]
+ :max-writes-per-key 16
+ :leave-db-running? false
+ :name "echo"
+ :logging-json? false
+ :start-time
+ #object[org.joda.time.DateTime "0x732ffb6a" "2025-01-13T00:40:53.190Z"]
+ :nemesis-interval 10
+ :net
+ #object[maelstrom.net$jepsen_net$reify__15251
+         "0x5ed83e36"
+         "maelstrom.net$jepsen_net$reify__15251@5ed83e36"]
+ :client
+ #object[maelstrom.workload.echo$client$reify__16863
+         "0x2459715c"
+         "maelstrom.workload.echo$client$reify__16863@2459715c"]
+ :barrier
+ #object[java.util.concurrent.CyclicBarrier
+         "0x401e36ab"
+         "java.util.concurrent.CyclicBarrier@401e36ab"]
+ :log-stderr false
+ :pure-generators true
+ :ssh {:dummy? true}
+ :rate 5
+ :checker
+ #object[jepsen.checker$compose$reify__11881
+         "0x4ce66169"
+         "jepsen.checker$compose$reify__11881@4ce66169"]
+ :argv
+ ("test"
+  "-w"
+  "echo"
+  "--bin"
+  "./target/debug/maelstrom_distributed"
+  "--"
+  "node-count"
+  "1"
+  "--time-limit"
+  "10")
+ :nemesis
+ (jepsen.nemesis.ReflCompose
+  {:fm {:start-partition 0,
+        :stop-partition 0,
+        :kill 1,
+        :start 1,
+        :pause 1,
+        :resume 1},
+   :nemeses [#unprintable "jepsen.nemesis.combined$partition_nemesis$reify__16416@53d0cf4d"
+             #unprintable "jepsen.nemesis.combined$db_nemesis$reify__16397@3c6c87fa"]})
+ :nodes ["n1" "n2" "n3" "n4" "n5"]
+ :test-count 1
+ :latency {:mean 0, :dist :constant}
+ :bin "./target/debug/maelstrom_distributed"
+ :generator
+ (jepsen.generator.TimeLimit
+  {:limit 60000000000,
+   :cutoff nil,
+   :gen (jepsen.generator.Any
+         {:gens [(jepsen.generator.OnThreads
+                  {:f #{:nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0x77198cce"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@77198cce"],
+                   :gen nil})
+                 (jepsen.generator.OnThreads
+                  {:f #jepsen.generator.context.AllBut{:element :nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0xe7b7395"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@e7b7395"],
+                   :gen (jepsen.generator.Stagger
+                         {:dt 400000000,
+                          :next-time nil,
+                          :gen (jepsen.generator.EachThread
+                                {:fresh-gen #object[maelstrom.workload.echo$workload$fn__16882
+                                                    "0x383c94ed"
+                                                    "maelstrom.workload.echo$workload$fn__16882@383c94ed"],
+                                 :context-filters #object[clojure.core$promise$reify__8591
+                                                          "0x293ccbdd"
+                                                          {:status :pending,
+                                                           :val nil}],
+                                 :gens {}})})})]})})
+ :log-net-recv false
+ :os
+ #object[maelstrom.net$jepsen_os$reify__15254
+         "0x12f85dc8"
+         "maelstrom.net$jepsen_os$reify__15254@12f85dc8"]
+ :time-limit 60
+ :workload :echo
+ :consistency-models [:strict-serializable]
+ :topology :grid}
+
+2025-01-13 00:40:55,232{GMT}	INFO	[jepsen node n1] maelstrom.net: Starting Maelstrom network
+2025-01-13 00:40:55,234{GMT}	INFO	[jepsen test runner] jepsen.db: Tearing down DB
+2025-01-13 00:40:55,236{GMT}	INFO	[jepsen test runner] jepsen.db: Setting up DB
+2025-01-13 00:40:55,238{GMT}	INFO	[jepsen node n3] maelstrom.db: Setting up n3
+2025-01-13 00:40:55,238{GMT}	INFO	[jepsen node n3] maelstrom.process: launching ./target/debug/maelstrom_distributed ["node-count" "1" "--time-limit" "10"]
+2025-01-13 00:40:55,239{GMT}	INFO	[jepsen node n2] maelstrom.db: Setting up n2
+2025-01-13 00:40:55,239{GMT}	INFO	[jepsen node n2] maelstrom.process: launching ./target/debug/maelstrom_distributed ["node-count" "1" "--time-limit" "10"]
+2025-01-13 00:40:55,240{GMT}	INFO	[jepsen node n4] maelstrom.db: Setting up n4
+2025-01-13 00:40:55,240{GMT}	INFO	[jepsen node n4] maelstrom.process: launching ./target/debug/maelstrom_distributed ["node-count" "1" "--time-limit" "10"]
+2025-01-13 00:40:55,242{GMT}	INFO	[jepsen node n5] maelstrom.db: Setting up n5
+2025-01-13 00:40:55,242{GMT}	INFO	[jepsen node n1] maelstrom.service: Starting services: (lin-kv lin-tso lww-kv seq-kv)
+2025-01-13 00:40:55,243{GMT}	INFO	[jepsen node n5] maelstrom.process: launching ./target/debug/maelstrom_distributed ["node-count" "1" "--time-limit" "10"]
+2025-01-13 00:40:55,257{GMT}	INFO	[jepsen node n1] maelstrom.db: Setting up n1
+2025-01-13 00:40:55,257{GMT}	INFO	[jepsen node n1] maelstrom.process: launching ./target/debug/maelstrom_distributed ["node-count" "1" "--time-limit" "10"]
+2025-01-13 00:40:55,272{GMT}	INFO	[jepsen test runner] jepsen.core: Relative time begins now
+2025-01-13 00:40:55,298{GMT}	INFO	[jepsen worker 3] jepsen.util: 3	:invoke	:echo	"Please echo 15"
+2025-01-13 00:40:55,684{GMT}	INFO	[jepsen worker 4] jepsen.util: 4	:invoke	:echo	"Please echo 87"
+2025-01-13 00:40:55,812{GMT}	INFO	[jepsen worker 2] jepsen.util: 2	:invoke	:echo	"Please echo 112"
+2025-01-13 00:40:56,019{GMT}	INFO	[jepsen worker 1] jepsen.util: 1	:invoke	:echo	"Please echo 36"
+2025-01-13 00:40:56,336{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 39"
+2025-01-13 00:41:00,299{GMT}	INFO	[jepsen worker 3] jepsen.util: 3	:info	:echo	"Please echo 15"	:net-timeout
+2025-01-13 00:41:00,300{GMT}	INFO	[jepsen worker 3] jepsen.util: 8	:invoke	:echo	"Please echo 12"
+2025-01-13 00:41:00,685{GMT}	INFO	[jepsen worker 4] jepsen.util: 4	:info	:echo	"Please echo 87"	:net-timeout
+2025-01-13 00:41:00,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 9	:invoke	:echo	"Please echo 97"
+2025-01-13 00:41:00,812{GMT}	INFO	[jepsen worker 2] jepsen.util: 2	:info	:echo	"Please echo 112"	:net-timeout
+2025-01-13 00:41:00,956{GMT}	INFO	[jepsen worker 2] jepsen.util: 7	:invoke	:echo	"Please echo 15"
+2025-01-13 00:41:01,019{GMT}	INFO	[jepsen worker 1] jepsen.util: 1	:info	:echo	"Please echo 36"	:net-timeout
+2025-01-13 00:41:01,110{GMT}	INFO	[jepsen worker 1] jepsen.util: 6	:invoke	:echo	"Please echo 45"
+2025-01-13 00:41:01,337{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:info	:echo	"Please echo 39"	:net-timeout
+2025-01-13 00:41:01,337{GMT}	INFO	[jepsen worker 0] jepsen.util: 5	:invoke	:echo	"Please echo 94"
+2025-01-13 00:41:05,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 8	:info	:echo	"Please echo 12"	:net-timeout
+2025-01-13 00:41:05,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 13	:invoke	:echo	"Please echo 109"
+2025-01-13 00:41:05,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 9	:info	:echo	"Please echo 97"	:net-timeout
+2025-01-13 00:41:05,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 14	:invoke	:echo	"Please echo 114"
+2025-01-13 00:41:05,956{GMT}	INFO	[jepsen worker 2] jepsen.util: 7	:info	:echo	"Please echo 15"	:net-timeout
+2025-01-13 00:41:06,042{GMT}	INFO	[jepsen worker 2] jepsen.util: 12	:invoke	:echo	"Please echo 114"
+2025-01-13 00:41:06,111{GMT}	INFO	[jepsen worker 1] jepsen.util: 6	:info	:echo	"Please echo 45"	:net-timeout
+2025-01-13 00:41:06,179{GMT}	INFO	[jepsen worker 1] jepsen.util: 11	:invoke	:echo	"Please echo 112"
+2025-01-13 00:41:06,337{GMT}	INFO	[jepsen worker 0] jepsen.util: 5	:info	:echo	"Please echo 94"	:net-timeout
+2025-01-13 00:41:06,337{GMT}	INFO	[jepsen worker 0] jepsen.util: 10	:invoke	:echo	"Please echo 28"
+2025-01-13 00:41:10,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 13	:info	:echo	"Please echo 109"	:net-timeout
+2025-01-13 00:41:10,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 18	:invoke	:echo	"Please echo 58"
+2025-01-13 00:41:10,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 14	:info	:echo	"Please echo 114"	:net-timeout
+2025-01-13 00:41:10,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 19	:invoke	:echo	"Please echo 13"
+2025-01-13 00:41:11,042{GMT}	INFO	[jepsen worker 2] jepsen.util: 12	:info	:echo	"Please echo 114"	:net-timeout
+2025-01-13 00:41:11,088{GMT}	INFO	[jepsen worker 2] jepsen.util: 17	:invoke	:echo	"Please echo 61"
+2025-01-13 00:41:11,179{GMT}	INFO	[jepsen worker 1] jepsen.util: 11	:info	:echo	"Please echo 112"	:net-timeout
+2025-01-13 00:41:11,337{GMT}	INFO	[jepsen worker 0] jepsen.util: 10	:info	:echo	"Please echo 28"	:net-timeout
+2025-01-13 00:41:11,376{GMT}	INFO	[jepsen worker 1] jepsen.util: 16	:invoke	:echo	"Please echo 29"
+2025-01-13 00:41:11,666{GMT}	INFO	[jepsen worker 0] jepsen.util: 15	:invoke	:echo	"Please echo 28"
+2025-01-13 00:41:15,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 18	:info	:echo	"Please echo 58"	:net-timeout
+2025-01-13 00:41:15,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 23	:invoke	:echo	"Please echo 99"
+2025-01-13 00:41:15,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 19	:info	:echo	"Please echo 13"	:net-timeout
+2025-01-13 00:41:15,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 24	:invoke	:echo	"Please echo 86"
+2025-01-13 00:41:16,089{GMT}	INFO	[jepsen worker 2] jepsen.util: 17	:info	:echo	"Please echo 61"	:net-timeout
+2025-01-13 00:41:16,089{GMT}	INFO	[jepsen worker 2] jepsen.util: 22	:invoke	:echo	"Please echo 73"
+2025-01-13 00:41:16,376{GMT}	INFO	[jepsen worker 1] jepsen.util: 16	:info	:echo	"Please echo 29"	:net-timeout
+2025-01-13 00:41:16,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 21	:invoke	:echo	"Please echo 28"
+2025-01-13 00:41:16,667{GMT}	INFO	[jepsen worker 0] jepsen.util: 15	:info	:echo	"Please echo 28"	:net-timeout
+2025-01-13 00:41:16,710{GMT}	INFO	[jepsen worker 0] jepsen.util: 20	:invoke	:echo	"Please echo 31"
+2025-01-13 00:41:20,301{GMT}	INFO	[jepsen worker 3] jepsen.util: 23	:info	:echo	"Please echo 99"	:net-timeout
+2025-01-13 00:41:20,302{GMT}	INFO	[jepsen worker 3] jepsen.util: 28	:invoke	:echo	"Please echo 17"
+2025-01-13 00:41:20,696{GMT}	INFO	[jepsen worker 4] jepsen.util: 24	:info	:echo	"Please echo 86"	:net-timeout
+2025-01-13 00:41:20,701{GMT}	INFO	[jepsen worker 4] jepsen.util: 29	:invoke	:echo	"Please echo 101"
+2025-01-13 00:41:21,089{GMT}	INFO	[jepsen worker 2] jepsen.util: 22	:info	:echo	"Please echo 73"	:net-timeout
+2025-01-13 00:41:21,090{GMT}	INFO	[jepsen worker 2] jepsen.util: 27	:invoke	:echo	"Please echo 33"
+2025-01-13 00:41:21,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 21	:info	:echo	"Please echo 28"	:net-timeout
+2025-01-13 00:41:21,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 26	:invoke	:echo	"Please echo 19"
+2025-01-13 00:41:21,710{GMT}	INFO	[jepsen worker 0] jepsen.util: 20	:info	:echo	"Please echo 31"	:net-timeout
+2025-01-13 00:41:21,776{GMT}	INFO	[jepsen worker 0] jepsen.util: 25	:invoke	:echo	"Please echo 100"
+2025-01-13 00:41:25,303{GMT}	INFO	[jepsen worker 3] jepsen.util: 28	:info	:echo	"Please echo 17"	:net-timeout
+2025-01-13 00:41:25,304{GMT}	INFO	[jepsen worker 3] jepsen.util: 33	:invoke	:echo	"Please echo 1"
+2025-01-13 00:41:25,701{GMT}	INFO	[jepsen worker 4] jepsen.util: 29	:info	:echo	"Please echo 101"	:net-timeout
+2025-01-13 00:41:25,702{GMT}	INFO	[jepsen worker 4] jepsen.util: 34	:invoke	:echo	"Please echo 98"
+2025-01-13 00:41:26,089{GMT}	INFO	[jepsen worker 2] jepsen.util: 27	:info	:echo	"Please echo 33"	:net-timeout
+2025-01-13 00:41:26,090{GMT}	INFO	[jepsen worker 2] jepsen.util: 32	:invoke	:echo	"Please echo 91"
+2025-01-13 00:41:26,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 26	:info	:echo	"Please echo 19"	:net-timeout
+2025-01-13 00:41:26,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 31	:invoke	:echo	"Please echo 62"
+2025-01-13 00:41:26,776{GMT}	INFO	[jepsen worker 0] jepsen.util: 25	:info	:echo	"Please echo 100"	:net-timeout
+2025-01-13 00:41:26,776{GMT}	INFO	[jepsen worker 0] jepsen.util: 30	:invoke	:echo	"Please echo 113"
+2025-01-13 00:41:30,305{GMT}	INFO	[jepsen worker 3] jepsen.util: 33	:info	:echo	"Please echo 1"	:net-timeout
+2025-01-13 00:41:30,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 38	:invoke	:echo	"Please echo 59"
+2025-01-13 00:41:30,703{GMT}	INFO	[jepsen worker 4] jepsen.util: 34	:info	:echo	"Please echo 98"	:net-timeout
+2025-01-13 00:41:30,703{GMT}	INFO	[jepsen worker 4] jepsen.util: 39	:invoke	:echo	"Please echo 63"
+2025-01-13 00:41:31,090{GMT}	INFO	[jepsen worker 2] jepsen.util: 32	:info	:echo	"Please echo 91"	:net-timeout
+2025-01-13 00:41:31,090{GMT}	INFO	[jepsen worker 2] jepsen.util: 37	:invoke	:echo	"Please echo 69"
+2025-01-13 00:41:31,377{GMT}	INFO	[jepsen worker 1] jepsen.util: 31	:info	:echo	"Please echo 62"	:net-timeout
+2025-01-13 00:41:31,458{GMT}	INFO	[jepsen worker 1] jepsen.util: 36	:invoke	:echo	"Please echo 106"
+2025-01-13 00:41:31,776{GMT}	INFO	[jepsen worker 0] jepsen.util: 30	:info	:echo	"Please echo 113"	:net-timeout
+2025-01-13 00:41:31,777{GMT}	INFO	[jepsen worker 0] jepsen.util: 35	:invoke	:echo	"Please echo 76"
+2025-01-13 00:41:35,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 38	:info	:echo	"Please echo 59"	:net-timeout
+2025-01-13 00:41:35,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 43	:invoke	:echo	"Please echo 109"
+2025-01-13 00:41:35,703{GMT}	INFO	[jepsen worker 4] jepsen.util: 39	:info	:echo	"Please echo 63"	:net-timeout
+2025-01-13 00:41:35,704{GMT}	INFO	[jepsen worker 4] jepsen.util: 44	:invoke	:echo	"Please echo 18"
+2025-01-13 00:41:36,090{GMT}	INFO	[jepsen worker 2] jepsen.util: 37	:info	:echo	"Please echo 69"	:net-timeout
+2025-01-13 00:41:36,092{GMT}	INFO	[jepsen worker 2] jepsen.util: 42	:invoke	:echo	"Please echo 35"
+2025-01-13 00:41:36,461{GMT}	INFO	[jepsen worker 1] jepsen.util: 36	:info	:echo	"Please echo 106"	:net-timeout
+2025-01-13 00:41:36,461{GMT}	INFO	[jepsen worker 1] jepsen.util: 41	:invoke	:echo	"Please echo 28"
+2025-01-13 00:41:36,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 35	:info	:echo	"Please echo 76"	:net-timeout
+2025-01-13 00:41:36,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 40	:invoke	:echo	"Please echo 111"
+2025-01-13 00:41:40,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 43	:info	:echo	"Please echo 109"	:net-timeout
+2025-01-13 00:41:40,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 48	:invoke	:echo	"Please echo 120"
+2025-01-13 00:41:40,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 44	:info	:echo	"Please echo 18"	:net-timeout
+2025-01-13 00:41:40,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 49	:invoke	:echo	"Please echo 40"
+2025-01-13 00:41:41,092{GMT}	INFO	[jepsen worker 2] jepsen.util: 42	:info	:echo	"Please echo 35"	:net-timeout
+2025-01-13 00:41:41,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 47	:invoke	:echo	"Please echo 14"
+2025-01-13 00:41:41,461{GMT}	INFO	[jepsen worker 1] jepsen.util: 41	:info	:echo	"Please echo 28"	:net-timeout
+2025-01-13 00:41:41,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 46	:invoke	:echo	"Please echo 102"
+2025-01-13 00:41:41,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 40	:info	:echo	"Please echo 111"	:net-timeout
+2025-01-13 00:41:41,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 45	:invoke	:echo	"Please echo 56"
+2025-01-13 00:41:45,306{GMT}	INFO	[jepsen worker 3] jepsen.util: 48	:info	:echo	"Please echo 120"	:net-timeout
+2025-01-13 00:41:45,307{GMT}	INFO	[jepsen worker 3] jepsen.util: 53	:invoke	:echo	"Please echo 102"
+2025-01-13 00:41:45,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 49	:info	:echo	"Please echo 40"	:net-timeout
+2025-01-13 00:41:45,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 54	:invoke	:echo	"Please echo 127"
+2025-01-13 00:41:46,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 47	:info	:echo	"Please echo 14"	:net-timeout
+2025-01-13 00:41:46,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 52	:invoke	:echo	"Please echo 63"
+2025-01-13 00:41:46,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 46	:info	:echo	"Please echo 102"	:net-timeout
+2025-01-13 00:41:46,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 51	:invoke	:echo	"Please echo 17"
+2025-01-13 00:41:46,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 45	:info	:echo	"Please echo 56"	:net-timeout
+2025-01-13 00:41:46,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 50	:invoke	:echo	"Please echo 106"
+2025-01-13 00:41:50,307{GMT}	INFO	[jepsen worker 3] jepsen.util: 53	:info	:echo	"Please echo 102"	:net-timeout
+2025-01-13 00:41:50,307{GMT}	INFO	[jepsen worker 3] jepsen.util: 58	:invoke	:echo	"Please echo 40"
+2025-01-13 00:41:50,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 54	:info	:echo	"Please echo 127"	:net-timeout
+2025-01-13 00:41:50,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 59	:invoke	:echo	"Please echo 127"
+2025-01-13 00:41:51,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 52	:info	:echo	"Please echo 63"	:net-timeout
+2025-01-13 00:41:51,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 57	:invoke	:echo	"Please echo 58"
+2025-01-13 00:41:51,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 51	:info	:echo	"Please echo 17"	:net-timeout
+2025-01-13 00:41:51,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 56	:invoke	:echo	"Please echo 112"
+2025-01-13 00:41:51,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 50	:info	:echo	"Please echo 106"	:net-timeout
+2025-01-13 00:41:51,781{GMT}	INFO	[jepsen worker 0] jepsen.util: 55	:invoke	:echo	"Please echo 99"
+2025-01-13 00:41:55,307{GMT}	INFO	[jepsen worker 3] jepsen.util: 58	:info	:echo	"Please echo 40"	:net-timeout
+2025-01-13 00:41:55,705{GMT}	INFO	[jepsen worker 4] jepsen.util: 59	:info	:echo	"Please echo 127"	:net-timeout
+2025-01-13 00:41:56,093{GMT}	INFO	[jepsen worker 2] jepsen.util: 57	:info	:echo	"Please echo 58"	:net-timeout
+2025-01-13 00:41:56,462{GMT}	INFO	[jepsen worker 1] jepsen.util: 56	:info	:echo	"Please echo 112"	:net-timeout
+2025-01-13 00:41:56,783{GMT}	INFO	[jepsen worker 0] jepsen.util: 55	:info	:echo	"Please echo 99"	:net-timeout
+2025-01-13 00:41:56,833{GMT}	INFO	[jepsen test runner] jepsen.core: Run complete, writing
+2025-01-13 00:41:56,925{GMT}	INFO	[jepsen node n1] maelstrom.db: Tearing down n1
+2025-01-13 00:41:56,927{GMT}	INFO	[jepsen node n2] maelstrom.db: Tearing down n2
+2025-01-13 00:41:56,927{GMT}	INFO	[jepsen node n3] maelstrom.db: Tearing down n3
+2025-01-13 00:41:56,929{GMT}	INFO	[jepsen node n4] maelstrom.db: Tearing down n4
+2025-01-13 00:41:56,935{GMT}	INFO	[jepsen node n5] maelstrom.db: Tearing down n5
+2025-01-13 00:41:58,267{GMT}	INFO	[jepsen node n1] maelstrom.net: Shutting down Maelstrom network
+2025-01-13 00:41:58,268{GMT}	INFO	[jepsen test runner] jepsen.core: Analyzing...
+2025-01-13 00:41:58,587{GMT}	INFO	[jepsen test runner] jepsen.core: Analysis complete
+2025-01-13 00:41:58,599{GMT}	INFO	[jepsen results] jepsen.store: Wrote /home/ashley/Documents/RustHome/distributed/maelstrom_distributed/store/echo/20250113T004053.190Z/results.edn
+2025-01-13 00:41:58,612{GMT}	INFO	[jepsen test runner] jepsen.core: {:perf {:latency-graph {:valid? true},
+        :rate-graph {:valid? true},
+        :valid? true},
+ :timeline {:valid? true},
+ :exceptions {:valid? true},
+ :stats {:valid? false,
+         :count 60,
+         :ok-count 0,
+         :fail-count 0,
+         :info-count 60,
+         :by-f {:echo {:valid? false,
+                       :count 60,
+                       :ok-count 0,
+                       :fail-count 0,
+                       :info-count 60}}},
+ :availability {:valid? true, :ok-fraction 0.0},
+ :net {:all {:send-count 130,
+             :recv-count 130,
+             :msg-count 130,
+             :msgs-per-op 2.1666667},
+       :clients {:send-count 130, :recv-count 130, :msg-count 130},
+       :servers {:send-count 0,
+                 :recv-count 0,
+                 :msg-count 0,
+                 :msgs-per-op 0.0},
+       :valid? true},
+ :workload {:valid? true, :errors ()},
+ :valid? false}
+
+
+Analysis invalid! (ﾉಥ益ಥ）ﾉ ┻━┻

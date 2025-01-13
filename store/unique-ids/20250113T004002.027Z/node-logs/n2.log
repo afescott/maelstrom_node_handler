@@ -1,0 +1,4 @@
+Error: Step failed for input: Message { src: "c7", dest: "n2", body: Body { id: Some(1), in_reply_to: None, payload: GenerateOk { guid: "01JHEHMYSSBVSES2PXZ1YX100K" } } }
+
+Caused by:
+    Should not generate ok?
