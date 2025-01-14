@@ -3,13 +3,13 @@ use std::io::{StdoutLock, Write};
 use anyhow::{bail, Context};
 use serde::Serialize;
 
-use crate::{Body, Message};
+use crate::{Body, Message, Payload};
 
 pub struct Node {
     pub id: usize,
     pub node_id: String,
     pub nodes_in_cluster: Vec<String>,
-    pub messages: Vec<String>,
+    pub messages: Vec<usize>,
 }
 
 impl Node {
@@ -24,14 +24,14 @@ impl Node {
     pub fn step(&mut self, input: Message, output: &mut StdoutLock) -> anyhow::Result<()> {
         let mut reply = input.clone().into_reply(Some(&mut self.id));
         match input.body.payload {
-            crate::Payload::Echo { echo } => {
+            Payload::Echo { echo } => {
                 reply.body.payload = crate::Payload::EchoOk { echo };
                 serde_json::to_writer(&mut *output, &reply).context("Echo serialisation")?;
                 output
                     .write_all(b"\n")
                     .context("write newline else buffer doesn't work")?;
             }
-            crate::Payload::Init { .. } => {
+            Payload::Init { .. } => {
                 /*                 input.body.payload = crate::Payload::InitOk; */
 
                 serde_json::to_writer(&mut *output, &reply).context("Init serialisation")?;
@@ -40,25 +40,49 @@ impl Node {
                     .context("write newline else buffer doesn't work")?;
             }
             //This should not happen
-            crate::Payload::InitOk { .. } => bail!("Error"),
-            crate::Payload::EchoOk { .. } => {}
-            crate::Payload::Generate => {
-                /* input.body.payload = crate::Payload::GenerateOk {
+            Payload::InitOk { .. } => bail!("Error"),
+            Payload::EchoOk { .. } => {}
+            Payload::Generate => {
+                reply.body.payload = Payload::GenerateOk {
                     guid: ulid::Ulid::new().to_string(),
-                }; */
+                };
 
                 serde_json::to_writer(&mut *output, &reply).context("Generate serialisation")?;
                 output
                     .write_all(b"\n")
                     .context("write newline else buffer doesn't work")?;
             }
-            crate::Payload::GenerateOk { .. } => bail!("Should not generate ok?"),
-            crate::Payload::Topology { topology } => todo!(),
-            crate::Payload::TopologyOk => todo!(),
-            crate::Payload::Broadcast { message } => todo!(),
-            crate::Payload::BroadcastOk => todo!(),
-            crate::Payload::Read => todo!(),
-            crate::Payload::ReadOk { messages } => todo!(),
+            Payload::GenerateOk { .. } => bail!("Should not generate ok?"),
+            Payload::Topology { topology } => {
+                reply.body.payload = Payload::TopologyOk;
+
+                serde_json::to_writer(&mut *output, &reply).context("Topology serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
+            }
+            Payload::TopologyOk => {}
+            Payload::Broadcast { message } => {
+                reply.body.payload = Payload::BroadcastOk;
+                self.messages.push(message);
+
+                serde_json::to_writer(&mut *output, &reply).context("Broadcast serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
+            }
+            Payload::BroadcastOk => {}
+            Payload::Read => {
+                reply.body.payload = Payload::ReadOk {
+                    messages: self.messages.clone(),
+                };
+
+                serde_json::to_writer(&mut *output, &reply).context("Read serialisation")?;
+                output
+                    .write_all(b"\n")
+                    .context("write newline else buffer doesn't work")?;
+            }
+            crate::Payload::ReadOk { messages } => {}
         }
         Ok(())
     }
