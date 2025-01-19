@@ -1,4 +1,8 @@
-use std::io::{StdoutLock, Write};
+use core::panicking::panic;
+use std::{
+    collections::{HashMap, HashSet},
+    io::{StdoutLock, Write},
+};
 
 use anyhow::{bail, Context};
 use serde::Serialize;
@@ -6,19 +10,29 @@ use serde::Serialize;
 use crate::{Body, Message, Payload};
 
 pub struct Node {
+    //current id of the node
     pub id: usize,
+    //node unique identifier
     pub node_id: String,
-    pub nodes_in_cluster: Vec<String>,
-    pub messages: Vec<usize>,
+    // nodes in the topology (neighbourhood)? and the messages this node is aware of
+    pub known_nodes: HashMap<String, HashSet<usize>>,
+    // Each of the messages received by the node
+    pub messages: HashSet<usize>,
+    //nodes we gossip with
+    pub neighbourhood: Vec<String>,
 }
 
 impl Node {
-    pub fn from_init(node_id: String, nodes_in_cluster: Vec<String>) -> Self {
+    pub fn from_init(node_id: String, nodes_in_cluster: Vec<String>, id: usize) -> Self {
         Self {
             node_id,
-            id: 1,
-            nodes_in_cluster,
-            messages: Vec::new(),
+            id: id + 1,
+            known_nodes: nodes_in_cluster
+                .into_iter()
+                .map(|i| (i, HashSet::new()))
+                .collect(),
+            neighbourhood: Vec::new(),
+            messages: HashSet::new(),
         }
     }
     pub fn step(&mut self, input: Message, output: &mut StdoutLock) -> anyhow::Result<()> {
@@ -53,7 +67,10 @@ impl Node {
                     .context("write newline else buffer doesn't work")?;
             }
             Payload::GenerateOk { .. } => bail!("Should not generate ok?"),
-            Payload::Topology { topology } => {
+            Payload::Topology { mut topology } => {
+                self.neighbourhood = topology
+                    .remove(&self.node_id)
+                    .unwrap_or_else(|| panic!("Topology should contain {}", self.node_id));
                 reply.body.payload = Payload::TopologyOk;
 
                 serde_json::to_writer(&mut *output, &reply).context("Topology serialisation")?;
@@ -64,7 +81,7 @@ impl Node {
             Payload::TopologyOk => {}
             Payload::Broadcast { message } => {
                 reply.body.payload = Payload::BroadcastOk;
-                self.messages.push(message);
+                self.messages.insert(message);
 
                 serde_json::to_writer(&mut *output, &reply).context("Broadcast serialisation")?;
                 output

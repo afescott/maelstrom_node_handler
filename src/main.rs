@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     io::{self, Write},
 };
 
@@ -71,7 +71,7 @@ pub enum Payload {
     },
     Read,
     ReadOk {
-        messages: Vec<usize>,
+        messages: HashSet<usize>,
     },
     Topology {
         topology: HashMap<String, Vec<String>>,
@@ -112,12 +112,22 @@ fn main() -> anyhow::Result<()> {
         .write_all(b"\n")
         .context("write newline else buffer doesn't work")?;
 
-    let mut init = Node::from_init(node_id, node_ids);
+    let mut init = Node::from_init(node_id, node_ids, 0);
 
     for input in inputs {
         let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
 
-        /*         if let Payload::Init { node_id, .. } = input.body.payload {} */
+        if let Payload::Init {
+            ref node_id,
+            ref node_ids,
+        } = input.body.payload
+        {
+            let mut init = Node::from_init(
+                node_id.to_string(),
+                node_ids.to_vec(),
+                input.body.id.unwrap(),
+            );
+        }
 
         init.step(input.clone(), &mut stdout)
             .context(format!("Step failed for input: {:?}", input))?;
