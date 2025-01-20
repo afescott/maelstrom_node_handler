@@ -1,6 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
-    io::{self, Write},
+    io::{self, BufRead, Write},
 };
 
 use anyhow::Context;
@@ -79,13 +79,19 @@ pub enum Payload {
     TopologyOk,
 }
 
+pub enum EventPayload {
+    Broadcast(Payload),
+    //I.e. from network
+    Injected(Payload),
+}
+
 fn main() -> anyhow::Result<()> {
+    let (tx, rx) = std::sync::mpsc::channel();
+
     let stdin = io::stdin().lock();
     let mut inputs = serde_json::Deserializer::from_reader(stdin).into_iter::<Message>();
 
     let mut stdout = io::stdout().lock();
-
-    /*     let mut state = Node { node_id:  }; */
 
     let init_msg = inputs
         .next()
@@ -101,7 +107,7 @@ fn main() -> anyhow::Result<()> {
         src: init_msg.dest,
         dest: init_msg.src,
         body: Body {
-            id: Some(0),
+            id: init_msg.body.id,
             in_reply_to: init_msg.body.id,
             payload: crate::Payload::InitOk,
         },
@@ -112,26 +118,38 @@ fn main() -> anyhow::Result<()> {
         .write_all(b"\n")
         .context("write newline else buffer doesn't work")?;
 
-    let mut init = Node::from_init(node_id, node_ids, 0);
+    let mut init = Node::from_init(node_id, node_ids, 0, tx);
 
-    for input in inputs {
-        let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
+    //Have to do this as it's not send
+    drop(stdin);
 
-        if let Payload::Init {
-            ref node_id,
-            ref node_ids,
-        } = input.body.payload
-        {
-            let mut init = Node::from_init(
-                node_id.to_string(),
-                node_ids.to_vec(),
-                input.body.id.unwrap(),
-            );
+    let jh = std::thread::spawn(move || {
+        let stdin = io::stdin().lock();
+
+        for input in stdin.lines() {
+            let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
+
+            if let Payload::Init {
+                ref node_id,
+                ref node_ids,
+            } = input.body.payload
+            {
+                let mut init = Node::from_init(
+                    node_id.to_string(),
+                    node_ids.to_vec(),
+                    input.body.id.unwrap(),
+                    tx,
+                );
+            }
+
+            init.step(input.clone(), &mut stdout)
+                .context(format!("Step failed for input: {:?}", input))?;
         }
 
-        init.step(input.clone(), &mut stdout)
-            .context(format!("Step failed for input: {:?}", input))?;
-    }
+        Ok(())
+    });
+
+    for input in rx {}
 
     Ok(())
 }

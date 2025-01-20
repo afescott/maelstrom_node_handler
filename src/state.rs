@@ -1,13 +1,13 @@
-use core::panicking::panic;
 use std::{
     collections::{HashMap, HashSet},
     io::{StdoutLock, Write},
+    sync::mpsc::Sender,
 };
 
 use anyhow::{bail, Context};
 use serde::Serialize;
 
-use crate::{Body, Message, Payload};
+use crate::{Body, EventPayload, Message, Payload};
 
 pub struct Node {
     //current id of the node
@@ -20,10 +20,17 @@ pub struct Node {
     pub messages: HashSet<usize>,
     //nodes we gossip with
     pub neighbourhood: Vec<String>,
+    //way to broadcast to other nodes
+    tx: Sender<EventPayload>,
 }
 
 impl Node {
-    pub fn from_init(node_id: String, nodes_in_cluster: Vec<String>, id: usize) -> Self {
+    pub fn from_init(
+        node_id: String,
+        nodes_in_cluster: Vec<String>,
+        id: usize,
+        tx: Sender<EventPayload>,
+    ) -> Self {
         Self {
             node_id,
             id: id + 1,
@@ -33,6 +40,7 @@ impl Node {
                 .collect(),
             neighbourhood: Vec::new(),
             messages: HashSet::new(),
+            tx,
         }
     }
     pub fn step(&mut self, input: Message, output: &mut StdoutLock) -> anyhow::Result<()> {
