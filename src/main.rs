@@ -1,22 +1,26 @@
 use std::{
     collections::{HashMap, HashSet},
+    fmt::Debug,
     io::{self, BufRead, Write},
 };
 
 use anyhow::Context;
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use state::Node;
 
 mod state;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct Message {
+struct Message<Payload> {
     src: String,
     dest: String,
-    body: Body,
+    body: Body<Payload>,
 }
 
-impl Message {
+impl<Payload> Message<Payload>
+where
+    Payload: Serialize + Debug,
+{
     fn into_reply(self, id: Option<&mut usize>) -> Self {
         Self {
             src: self.dest,
@@ -27,21 +31,39 @@ impl Message {
                     *id += 1;
                     mid
                 }),
-                /*                 Some(self.id), */
                 in_reply_to: self.body.id,
                 payload: self.body.payload,
             },
         }
     }
+
+    pub fn send(&self, output: &mut impl Write) -> anyhow::Result<()> {
+        serde_json::to_writer(&mut *output, self)
+            .context(format!("{:?} serialisation", self.body.payload))?;
+        output
+            .write_all(b"\n")
+            .context("write newline else buffer doesn't work")?;
+
+        Ok(())
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct Body {
+pub struct Body<Payload> {
     #[serde(rename = "msg_id")]
     id: Option<usize>,
     in_reply_to: Option<usize>,
     #[serde(flatten)]
     payload: Payload,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum InitPayload {
+    Init {
+        node_id: String,
+        node_ids: Vec<String>,
+    },
+    InitOk,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -52,11 +74,6 @@ pub enum Payload {
         message: usize,
     },
     BroadcastOk,
-    Init {
-        node_id: String,
-        node_ids: Vec<String>,
-    },
-    InitOk,
     Echo {
         echo: String,
     },
@@ -79,37 +96,47 @@ pub enum Payload {
     TopologyOk,
 }
 
-pub enum EventPayload {
-    Broadcast(Payload),
-    //I.e. from network
-    Injected(Payload),
+//for multi node gossip, 2 types of message one for injected (network) and one that our nodes sent
+pub enum Event<Payload> {
+    // i.e. from network
+    Message(Message<Payload>),
+    //
+    Injected(InjectedPayload),
 }
 
-fn main() -> anyhow::Result<()> {
+enum InjectedPayload {
+    Gossip,
+}
+
+fn main() {}
+
+fn main_loop<P: DeserializeOwned + Debug + Send + 'static>() -> anyhow::Result<()> {
     let (tx, rx) = std::sync::mpsc::channel();
 
-    let stdin = io::stdin().lock();
-    let mut inputs = serde_json::Deserializer::from_reader(stdin).into_iter::<Message>();
-
     let mut stdout = io::stdout().lock();
+    let mut stdin = io::stdin().lock().lines();
 
-    let init_msg = inputs
-        .next()
-        .expect("Value")
-        .context("No init received")
-        .context("Init msg couldn't be deserialized")?;
+    let init_msg: Message<InitPayload> = serde_json::from_str(
+        &stdin
+            .next()
+            .expect("No init message received")
+            .context("Failed to read init msg from reader")?,
+    )
+    .context("Init msg couldn't be deserialized")?;
 
-    let Payload::Init { node_id, node_ids } = init_msg.body.payload else {
+    let InitPayload::Init { node_id, node_ids } = init_msg.body.payload else {
         panic!("first message should be init");
     };
+
+    let mut init = Node::from_init(node_id, node_ids, tx);
 
     let init_resp = Message {
         src: init_msg.dest,
         dest: init_msg.src,
         body: Body {
-            id: init_msg.body.id,
+            id: Some(0),
             in_reply_to: init_msg.body.id,
-            payload: crate::Payload::InitOk,
+            payload: InitPayload::InitOk,
         },
     };
 
@@ -118,38 +145,33 @@ fn main() -> anyhow::Result<()> {
         .write_all(b"\n")
         .context("write newline else buffer doesn't work")?;
 
-    let mut init = Node::from_init(node_id, node_ids, 0, tx);
-
-    //Have to do this as it's not send
+    //Dropping stdin means no buffered data is lost
     drop(stdin);
+
+    let (tx, rx) = std::sync::mpsc::channel();
 
     let jh = std::thread::spawn(move || {
         let stdin = io::stdin().lock();
 
         for input in stdin.lines() {
-            let input = input.context("Maelstrom input from STDIN could not be deserialized")?;
+            let line = input.context("Maelstrom input from STDIN could not be deserialized")?;
 
-            if let Payload::Init {
-                ref node_id,
-                ref node_ids,
-            } = input.body.payload
-            {
-                let mut init = Node::from_init(
-                    node_id.to_string(),
-                    node_ids.to_vec(),
-                    input.body.id.unwrap(),
-                    tx,
-                );
+            let input: Message<P> =
+                serde_json::from_str(&line).context("Maelstrom input could not be deserailized")?;
+            if let Err(_) = tx.send(Event::Message(input)) {
+                return Ok::<_, anyhow::Error>(());
             }
-
-            init.step(input.clone(), &mut stdout)
-                .context(format!("Step failed for input: {:?}", input))?;
         }
 
         Ok(())
     });
 
     for input in rx {}
+
+    //2 layers of joining a thread
+    jh.join()
+        .expect("stdin thread panicked")
+        .context("stdin thread err'd")?;
 
     Ok(())
 }
