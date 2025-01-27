@@ -1,0 +1,4 @@
+Error: Init msg couldn't be deserialized
+
+Caused by:
+    no variant of enum InitPayload found in flattened data at line 1 column 102

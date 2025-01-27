@@ -38,11 +38,8 @@ where
     }
 
     pub fn send(&self, output: &mut impl Write) -> anyhow::Result<()> {
-        serde_json::to_writer(&mut *output, self)
-            .context(format!("{:?} serialisation", self.body.payload))?;
-        output
-            .write_all(b"\n")
-            .context("write newline else buffer doesn't work")?;
+        serde_json::to_writer(&mut *output, self).context("serialization response msg")?;
+        output.write_all(b"\n").context("write newline")?;
 
         Ok(())
     }
@@ -57,8 +54,10 @@ pub struct Body<Payload> {
     payload: Payload,
 }
 
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum InitPayload {
+enum InitPayload {
     Init {
         node_id: String,
         node_ids: Vec<String>,
@@ -86,6 +85,9 @@ pub enum Payload {
         #[serde(rename = "id")]
         guid: String,
     },
+    Gossip {
+        seen: HashSet<usize>,
+    },
     Read,
     ReadOk {
         messages: HashSet<usize>,
@@ -97,7 +99,7 @@ pub enum Payload {
 }
 
 //for multi node gossip, 2 types of message one for injected (network) and one that our nodes sent
-pub enum Event<Payload> {
+enum Event<Payload> {
     // i.e. from network
     Message(Message<Payload>),
     //
@@ -108,7 +110,11 @@ enum InjectedPayload {
     Gossip,
 }
 
-fn main() {}
+fn main() -> anyhow::Result<()> {
+    main_loop::<Message<Payload>>()?;
+
+    Ok(())
+}
 
 fn main_loop<P: DeserializeOwned + Debug + Send + 'static>() -> anyhow::Result<()> {
     let (tx, rx) = std::sync::mpsc::channel();
@@ -128,7 +134,8 @@ fn main_loop<P: DeserializeOwned + Debug + Send + 'static>() -> anyhow::Result<(
         panic!("first message should be init");
     };
 
-    let mut init = Node::from_init(node_id, node_ids, tx);
+    let mut init =
+        Node::from_init(node_id, node_ids, tx.clone()).context("node initialisation failed")?;
 
     let init_resp = Message {
         src: init_msg.dest,
@@ -148,15 +155,13 @@ fn main_loop<P: DeserializeOwned + Debug + Send + 'static>() -> anyhow::Result<(
     //Dropping stdin means no buffered data is lost
     drop(stdin);
 
-    let (tx, rx) = std::sync::mpsc::channel();
-
     let jh = std::thread::spawn(move || {
         let stdin = io::stdin().lock();
 
         for input in stdin.lines() {
             let line = input.context("Maelstrom input from STDIN could not be deserialized")?;
 
-            let input: Message<P> =
+            let input: Message<Payload> =
                 serde_json::from_str(&line).context("Maelstrom input could not be deserailized")?;
             if let Err(_) = tx.send(Event::Message(input)) {
                 return Ok::<_, anyhow::Error>(());
@@ -166,7 +171,10 @@ fn main_loop<P: DeserializeOwned + Debug + Send + 'static>() -> anyhow::Result<(
         Ok(())
     });
 
-    for input in rx {}
+    for input in rx {
+        init.step(input, &mut stdout)
+            .context("Node step function failed")?;
+    }
 
     //2 layers of joining a thread
     jh.join()

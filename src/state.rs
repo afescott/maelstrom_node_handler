@@ -9,7 +9,7 @@ use std::{
 use anyhow::{bail, Context};
 use serde::Serialize;
 
-use crate::{Body, Event, EventPayload, Message, Payload};
+use crate::{Body, Event, Message, Payload};
 
 pub struct Node {
     //current id of the node
@@ -22,18 +22,16 @@ pub struct Node {
     pub messages: HashSet<usize>,
     //nodes we gossip with
     pub neighbourhood: Vec<String>,
-    //way to broadcast to other nodes
-    tx: Sender<EventPayload>,
 }
 
 impl Node {
     pub fn from_init(
         node_id: String,
         nodes_in_cluster: Vec<String>,
-        tx: Sender<EventPayload>,
+        tx: Sender<Event<Payload>>,
     ) -> anyhow::Result<Self> {
         //Required for multi node broadcasting
-        std::thread::spawn(|| loop {
+        std::thread::spawn(move || loop {
             sleep(Duration::from_millis(300));
 
             tx.send(Event::Injected(crate::InjectedPayload::Gossip));
@@ -48,13 +46,30 @@ impl Node {
                 .collect(),
             neighbourhood: Vec::new(),
             messages: HashSet::new(),
-            tx,
         })
     }
     pub fn step(&mut self, input: Event<Payload>, output: &mut StdoutLock) -> anyhow::Result<()> {
         match input {
             Event::Injected(payload) => match payload {
-                crate::InjectedPayload::Gossip => todo!(),
+                crate::InjectedPayload::Gossip => {
+                    for neighbour in &self.neighbourhood {
+                        Message {
+                            src: self.node_id.clone(),
+                            dest: neighbour.clone(),
+                            body: Body {
+                                id: None,
+                                in_reply_to: None,
+                                payload: Payload::Gossip {
+                                    // we can do better. essentially prune out the nodes these
+                                    // nodes are aware of
+                                    seen: self.messages.clone(),
+                                },
+                            },
+                        }
+                        .send(&mut *output)
+                        .with_context(|| format!("gossip to {}", neighbour))?;
+                    }
+                }
             },
             Event::Message(input) => {
                 let mut reply = input.clone().into_reply(Some(&mut self.id));
@@ -74,6 +89,7 @@ impl Node {
                         reply.send(output);
                     }
                     Payload::GenerateOk { .. } => bail!("Should not generate ok?"),
+                    Payload::Gossip { seen } => self.messages.extend(seen),
                     Payload::Topology { mut topology } => {
                         self.neighbourhood = topology
                             .remove(&self.node_id)
@@ -98,6 +114,7 @@ impl Node {
                         reply.send(output);
                     }
                     crate::Payload::ReadOk { messages } => {}
+                    Payload::ReadOk { messages } => todo!(),
                 }
             }
         }
